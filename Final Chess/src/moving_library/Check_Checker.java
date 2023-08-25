@@ -12,75 +12,138 @@ public class Check_Checker extends Piece{
 	
 	public void checkAll(ArrayList<Move> pseudo_legal_moves,Board board) {
 		if (board.isWhite_turn()==true) {
+			//-1*-25==25, which is the white king
+			//1*-25 finds the black king
 			color_modifier=-1;
 		} else {
 			color_modifier=1;
 		}
 		int i=0;
+		//loop over all moves
 		while (i<pseudo_legal_moves.size()) {
+			//set test board to current position and execute move to test
 			set_testboard_to_current_position(board);
 			execute_test_move(pseudo_legal_moves.get(i),board);
+			//locate king of whose side it is to move
 			for (int j=0;j<64;j++) {
 				if (check_testing_board[j]==-25*color_modifier) {
 					kings_square=j;
 					break;
 				}
 			}
-			if (knight_attack(kings_square, board, color_modifier)==false
-			&diagonal_attack(kings_square, board, color_modifier)==false
-			&straight_attack(kings_square, board, color_modifier)==false) {
+			//check all different attacks
+			if (knight_attack(this.kings_square, color_modifier)==false
+			&diagonal_attack(this.kings_square, color_modifier, board.isWhite_turn())==false
+			&straight_attack(this.kings_square, color_modifier)==false) {
 				i++;
 			} else {
 				pseudo_legal_moves.remove(i);
 			}
 		}
 	}
-	protected boolean straight_attack(int kings_square,Board board, int c) {
+	//rook and queen attack on testing board
+	protected boolean straight_attack(int kings_square,int c) {
 		for (int i=0;i<straight_offsets.length;i++) {
 			for (int j=1;(kings_square+straight_offsets[i]*j)<64&(kings_square+straight_offsets[i]*j)>-1&j<8;j++) {
-				if (piece_of_color(board,kings_square,kings_square+straight_offsets[i]*j)==false&sameline(kings_square,kings_square+straight_offsets[i]*j)==true) {
-					if (board.getSquare(kings_square+straight_offsets[i]*j)==5*c
-					||board.getSquare(kings_square+straight_offsets[i]*j)==9*c) {
+				if (piece_of_color(check_testing_board,kings_square,kings_square+straight_offsets[i]*j)==false&sameline(kings_square,kings_square+straight_offsets[i]*j)==true) {
+					if (check_testing_board[kings_square+straight_offsets[i]*j]==5*c
+					||check_testing_board[kings_square+straight_offsets[i]*j]==9*c) {
 						return true;
 					}
-				} else if (piece_of_color(board,kings_square,kings_square+straight_offsets[i]*j)==true) {
+				} else if (piece_of_color(check_testing_board,kings_square,kings_square+straight_offsets[i]*j)==true) {
 					break;
 				}
 			}
 		}
 		return false;
 	}
-	protected boolean diagonal_attack(int kings_square,Board board, int c) {
-		if (board.isWhite_turn()==true) {
-			if (board.getSquare(kings_square+9)==-1&Edges.onrightedge(kings_square)==false) {
-				return true;
+	//rook and queen attack, with Board parameter
+		protected boolean straight_attack(int kings_square,Board board,int c) {
+			for (int i=0;i<straight_offsets.length;i++) {
+				for (int j=1;(kings_square+straight_offsets[i]*j)<64&(kings_square+straight_offsets[i]*j)>-1&j<8;j++) {
+					if (piece_of_color(board,kings_square,kings_square+straight_offsets[i]*j)==false&sameline(kings_square,kings_square+straight_offsets[i]*j)==true) {
+						if (board.getSquare(kings_square+straight_offsets[i]*j)==5*c
+						||board.getSquare(kings_square+straight_offsets[i]*j)==9*c) {
+							return true;
+						}
+					} else if (piece_of_color(board,kings_square,kings_square+straight_offsets[i]*j)==true) {
+						break;
+					}
+				}
 			}
-			if (board.getSquare(kings_square+7)==-1&Edges.onleftedge(kings_square)==false) {
-				return true;
+			return false;
+		}
+	//bishop, queen and pawn attack with testing board
+	/*
+	 * checks possible pawn attacks, aswell as queen and bishop attacks
+	 */
+	protected boolean diagonal_attack(int kings_square,int c, boolean iswhiteturn) {
+		if (iswhiteturn==true) {
+			if (kings_square+9<=63) {
+				if (check_testing_board[kings_square+9]==-1&Edges.onrightedge(kings_square)==false) {
+					return true;
+				}
+				if (check_testing_board[kings_square+7]==-1&Edges.onleftedge(kings_square)==false) {
+					return true;
+				}
 			}
 		} else {
-			if (board.getSquare(kings_square-9)==1&Edges.onleftedge(kings_square)==false) {
-				return true;
-			}
-			if (board.getSquare(kings_square-7)==1&Edges.onleftedge(kings_square)==false) {
-				return true;
+			if (kings_square-9>=0) {
+				if (check_testing_board[kings_square-9]==1&Edges.onleftedge(kings_square)==false) {
+					return true;
+				}
+				if (check_testing_board[kings_square-7]==1&Edges.onleftedge(kings_square)==false) {
+					return true;
+				}
 			}
 		}
 		for (int i=0;i<diagonal_offsets.length;i++) {
 			for (int j=1;(kings_square+diagonal_offsets[i]*j)<64&(kings_square+diagonal_offsets[i]*j)>-1&j<8;j++) {
-				if (piece_of_color(board,kings_square,kings_square+diagonal_offsets[i]*j)==false&samediagonal(kings_square,kings_square+diagonal_offsets[i]*j)==true) {
-					if (board.getSquare(kings_square+diagonal_offsets[i]*j)==3*c
-					||board.getSquare(kings_square+diagonal_offsets[i]*j)==9*c) {
+				if (piece_of_color(check_testing_board,kings_square,kings_square+diagonal_offsets[i]*j)==false&samediagonal(kings_square,kings_square+diagonal_offsets[i]*j)==true) {
+					if (check_testing_board[kings_square+diagonal_offsets[i]*j]==3*c
+					||check_testing_board[kings_square+diagonal_offsets[i]*j]==9*c) {
 						return true;
 					}
-				} else if (piece_of_color(board,kings_square,kings_square+diagonal_offsets[i]*j)==true) {
+				} else if (piece_of_color(check_testing_board,kings_square,kings_square+diagonal_offsets[i]*j)==true) {
 					break;
 				}
 			}
 		}
 		return false;
 	}
-	protected boolean knight_attack(int kings_square,Board board, int c) {
+	//bishop, queen and pawn attack with testing board
+		protected boolean diagonal_attack(int kings_square,Board board, int c) {
+			if (board.isWhite_turn()==true) {
+				if (check_testing_board[kings_square+9]==-1&Edges.onrightedge(kings_square)==false) {
+					return true;
+				}
+				if (board.getSquare(kings_square+7)==-1&Edges.onleftedge(kings_square)==false) {
+					return true;
+				}
+			} else {
+				if (board.getSquare(kings_square-9)==1&Edges.onleftedge(kings_square)==false) {
+					return true;
+				}
+				if (board.getSquare(kings_square-7)==1&Edges.onleftedge(kings_square)==false) {
+					return true;
+				}
+			}
+			for (int i=0;i<diagonal_offsets.length;i++) {
+				for (int j=1;(kings_square+diagonal_offsets[i]*j)<64&(kings_square+diagonal_offsets[i]*j)>-1&j<8;j++) {
+					if (piece_of_color(board,kings_square,kings_square+diagonal_offsets[i]*j)==false&samediagonal(kings_square,kings_square+diagonal_offsets[i]*j)==true) {
+						if (check_testing_board[kings_square+diagonal_offsets[i]*j]==3*c
+						||check_testing_board[kings_square+diagonal_offsets[i]*j]==9*c) {
+							return true;
+						}
+					} else if (piece_of_color(board,kings_square,kings_square+diagonal_offsets[i]*j)==true) {
+						break;
+					}
+				}
+			}
+			return false;
+		}
+	//knight attack
+	protected boolean knight_attack(int kings_square,int c) {
 		for (int i=0;i<8;i++) {
 			if (kings_square+knight_offsets[i]>=0&kings_square+knight_offsets[i]<=63) {	
 				if(kings_square+knight_offsets[i]==2*c
@@ -91,6 +154,14 @@ public class Check_Checker extends Piece{
 		}
 		return false;
 	}
+	//execute the move for attack testing
+	/*
+	 * the board is the actual game board and is used to identify if the current positon
+	 * (on the board) possesses all criteria for en passant, which would otherwise require
+	 * a new instance of Board for this class
+	 * 
+	 * It is never modified in this function
+	 */
 	public void execute_test_move(Move move,Board board) {
 		if (move.piece_type()==25&move.start_square()==4&move.target_square()==2) {
 			check_testing_board[move.target_square()]=move.piece_type();
@@ -116,6 +187,14 @@ public class Check_Checker extends Piece{
 		}
 		check_testing_board[move.start_square()]=0;
 	}
+	//en passaent attack
+	/*
+	 * the board is the actual game board and is used to identify if the current positon
+	 * (on the board) possesses all criteria for en passant, which would otherwise require
+	 * a new instance of Board for this class
+	 * 
+	 * It is never modified in this function
+	 */
 	private boolean testmove_is_enpa(Move move,Board board) {
 		if (move.piece_type()!=1&move.piece_type()!=-1) {
 			return false;
@@ -137,6 +216,7 @@ public class Check_Checker extends Piece{
 		}
 		return false;
 	}
+	//set testboard to the position your in
 	private void set_testboard_to_current_position(Board board) {
 		for (int i=0;i<64;i++) {
 			check_testing_board[i]=board.getSquare(i);

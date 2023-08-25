@@ -3,6 +3,7 @@ package moving_library;
 import java.util.ArrayList;
 
 public class Move_Handler {
+	Board board=new Board();
 	Pawn pawn=new Pawn();
 	Knight knight=new Knight();
 	Bishop bishop=new Bishop();
@@ -68,7 +69,6 @@ public class Move_Handler {
 		pseudo_legal_moves.clear();
 	}
 	public void execute_move(Board board, Move move) {
-		System.out.println("execute");
 		switch (move.piece_type()) {
 		case 25:
 			board.white_moves_king();
@@ -136,5 +136,36 @@ public class Move_Handler {
 			}
 		}
 		return false;
+	}
+	public void move(int startsquare, int targetsquare) {
+		board.clear_moves();
+		generate_all_legal_moves(board);
+		for (int i=0;i<board.amount_of_legal_moves();i++) {
+			if (board.getMove(i).start_square()==startsquare&&board.getMove(i).target_square()==targetsquare) {
+				execute_move(board, board.getMove(i));
+				startsquare=-1;
+				targetsquare=-1;
+				if (board.getMove(i).promotion_type()!=-1) {
+					board.setUnfinished_promotion(true);
+					board.setOpen_promotion_square(board.getMove(i).target_square());
+				}
+				board.clear_moves();
+				break;
+			}
+		}
+	}
+	public void promote(int promoted_piece) {
+		if (board.isWhite_turn()==true) {
+			promoted_piece=promoted_piece*-1;
+		}
+		board.setSquare(board.getOpen_promotion_square(),promoted_piece);
+		board.setUnfinished_promotion(false);
+		board.setOpen_promotion_square(-1);
+	}
+	public boolean game_is_over(Board board) {
+		return end.game_has_ended(board);
+	}
+	public Board get_board() {
+		return this.board;
 	}
 }

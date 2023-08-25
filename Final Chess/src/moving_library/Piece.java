@@ -10,6 +10,15 @@ public class Piece {
 			return false;
 		}
 	}
+	boolean piece_of_color(int[] board, int square, int square_to_compare_to) {
+		if (board[square]>0&board[square_to_compare_to]>0) {
+			return true;
+		} else if (board[square]<0&board[square_to_compare_to]<0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	public boolean is_capture(int square, Board board) {
 		if (board.getSquare(square)!=0) {
 			return true;
