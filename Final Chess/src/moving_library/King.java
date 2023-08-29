@@ -10,7 +10,7 @@ public class King extends Piece{
 		king_moves.clear();
 		for (int i=0;i<8;i++) {
 			if ((square+king_offsets[i])>-1&(square+king_offsets[i])<64) {
-				if (is_adjacent_square(square,i)==true&piece_of_color(board,square,square+king_offsets[i])==false&king_on_adjacent_square(square+i, i, board)==false) {
+				if (is_adjacent_square(square, square+king_offsets[i])==true&piece_of_color(board,square,square+king_offsets[i])==false&king_on_adjacent_square(square+king_offsets[i],board)==false) {
 					king_moves.add(new Move(square,square+king_offsets[i],board.getSquare(square),-1,-1,is_capture(square+king_offsets[i],board)));
 				}
 			}
@@ -30,28 +30,31 @@ public class King extends Piece{
 				king_moves.add(new Move(60,58,Piece_Codes.BLACK_KING.get_piece_code(),-1,-1,false));
 			}
 		}
-		
 		return king_moves;
 	}
-	private boolean is_adjacent_square(int square, int i) {
-		if (Edges.onrightedge(square)==true&i<3) {
-			return false;
-		} else if (Edges.onleftedge(square)==true&i>4) {
-			return false;
+	private boolean is_adjacent_square(int square, int othersquare) {
+		if (Edges.onrightedge(square)) {
+			if (othersquare==square+9||othersquare==square+1||othersquare==square-7) {
+				return false;
+			}
+		} else if (Edges.onleftedge(square)) {
+			if (othersquare==square-1||othersquare==square-9||othersquare==square+7) {
+				return false;
+			}
 		}
-		return true;
+ 		return true;
 	}
-	private boolean king_on_adjacent_square(int move_square, int i, Board board) {
+	private boolean king_on_adjacent_square(int move_square, Board board) {
 		for (int j=0;j<8;j++) {
-			if (board.isWhite_turn()==true) {
-				if (is_adjacent_square(move_square, j)==true&board.getSquare(move_square+j)!=-25) {
-					return false;
+			if (board.isWhite_turn()) {
+				if (is_adjacent_square(move_square,move_square+king_offsets[j])==true&board.getSquare(move_square+king_offsets[j])==-25) {
+					return true;
 				}
 			} else {
-				if (is_adjacent_square(move_square, j)==true&board.getSquare(move_square+j)!=25) {
-					return false;
+				if (is_adjacent_square(move_square,move_square+king_offsets[j])==true&board.getSquare(move_square+king_offsets[j])==25) {
+					return true;
 				}
-			}
+			}	
 		}
 		return false;
 	}
