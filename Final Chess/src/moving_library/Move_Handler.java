@@ -69,6 +69,28 @@ public class Move_Handler {
 		pseudo_legal_moves.clear();
 	}
 	public void execute_move(Board board, Move move) {
+		if (move.piece_type()==25&move.start_square()==4&move.target_square()==2) {
+			board.setSquare(move.target_square(),move.piece_type());
+			board.setSquare(0, 0);
+			board.setSquare(3, 5);
+		} else if (move.piece_type()==25&move.start_square()==4&move.target_square()==6) {
+			board.setSquare(move.target_square(),move.piece_type());
+			board.setSquare(7, 0);
+			board.setSquare(5, 5);
+		} else if (move.piece_type()==-25&move.start_square()==60&move.target_square()==58) {
+			board.setSquare(move.target_square(),move.piece_type());
+			board.setSquare(56, 0);
+			board.setSquare(59, -5);
+		} else if (move.piece_type()==-25&move.start_square()==60&move.target_square()==62) {
+			board.setSquare(move.target_square(),move.piece_type());
+			board.setSquare(63, 0);
+			board.setSquare(61, -5);
+		} else if (move_is_enpa(move,board)==true) {
+			board.setSquare(move.target_square(),move.piece_type());
+			board.setSquare(board.getEn_passant_position(), 0);
+		} else {
+			board.setSquare(move.target_square(), move.piece_type());
+		}
 		switch (move.piece_type()) {
 		case 25:
 			board.white_moves_king();
@@ -89,28 +111,6 @@ public class Move_Handler {
 			} else if (move.start_square()==63) {
 				board.setBlack_castle_kingside(false);
 			}
-		}
-		if (move.piece_type()==25&move.start_square()==4&move.target_square()==2) {
-			board.setSquare(move.target_square(),move.piece_type());
-			board.setSquare(0, 0);
-			board.setSquare(3, 5);
-		} else if (move.piece_type()==25&move.start_square()==4&move.target_square()==6) {
-			board.setSquare(move.target_square(),move.piece_type());
-			board.setSquare(7, 0);
-			board.setSquare(5, 5);
-		} else if (move.piece_type()==-25&move.start_square()==60&move.target_square()==58) {
-			board.setSquare(move.target_square(),move.piece_type());
-			board.setSquare(56, 0);
-			board.setSquare(59, -5);
-		} else if (move.piece_type()==25&move.start_square()==60&move.target_square()==62) {
-			board.setSquare(move.target_square(),move.piece_type());
-			board.setSquare(63, 0);
-			board.setSquare(61, -5);
-		} else if (move_is_enpa(move,board)==true) {
-			board.setSquare(move.target_square(),move.piece_type());
-			board.setSquare(board.getEn_passant_position(), 0);
-		} else {
-			board.setSquare(move.target_square(), move.piece_type());
 		}
 		board.setSquare(move.start_square(), 0);
 		board.setEn_passant_position(move.en_passant_square());

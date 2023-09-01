@@ -99,10 +99,12 @@ public class Check_Checker extends Piece{
 		}
 		for (int i=0;i<diagonal_offsets.length;i++) {
 			for (int j=1;(kings_square+diagonal_offsets[i]*j)<64&(kings_square+diagonal_offsets[i]*j)>-1&j<8;j++) {
-				if (piece_of_color(check_testing_board,kings_square,kings_square+diagonal_offsets[i]*j)==false&samediagonal(kings_square,kings_square+diagonal_offsets[i]*j)==true) {
+				if (piece_of_color(check_testing_board,kings_square,kings_square+diagonal_offsets[i]*j)==false&check_testing_board[kings_square+diagonal_offsets[i]*j]!=0&samediagonal(kings_square,kings_square+diagonal_offsets[i]*j)==true) {
 					if (check_testing_board[kings_square+diagonal_offsets[i]*j]==3*c
 					||check_testing_board[kings_square+diagonal_offsets[i]*j]==9*c) {
 						return true;
+					} else {
+						break;
 					}
 				} else if (piece_of_color(check_testing_board,kings_square,kings_square+diagonal_offsets[i]*j)==true) {
 					break;
@@ -111,7 +113,7 @@ public class Check_Checker extends Piece{
 		}
 		return false;
 	}
-	//bishop, queen and pawn attack with testing board
+	//bishop, queen and pawn attack with real board
 		protected boolean diagonal_attack(int kings_square,Board board, int c) {
 			if (board.isWhite_turn()==true) {
 				if (check_testing_board[kings_square+9]==-1&Edges.onrightedge(kings_square)==false) {
@@ -130,10 +132,12 @@ public class Check_Checker extends Piece{
 			}
 			for (int i=0;i<diagonal_offsets.length;i++) {
 				for (int j=1;(kings_square+diagonal_offsets[i]*j)<64&(kings_square+diagonal_offsets[i]*j)>-1&j<8;j++) {
-					if (piece_of_color(board,kings_square,kings_square+diagonal_offsets[i]*j)==false&samediagonal(kings_square,kings_square+diagonal_offsets[i]*j)==true) {
-						if (check_testing_board[kings_square+diagonal_offsets[i]*j]==3*c
-						||check_testing_board[kings_square+diagonal_offsets[i]*j]==9*c) {
+					if (piece_of_color(board,kings_square,kings_square+diagonal_offsets[i]*j)==false&board.getSquare(kings_square+diagonal_offsets[i]*j)!=0&samediagonal(kings_square,kings_square+diagonal_offsets[i]*j)==true) {
+						if (board.getSquare(kings_square+diagonal_offsets[i]*j)==3*c
+						||board.getSquare(kings_square+diagonal_offsets[i]*j)==9*c) {
 							return true;
+						} else {
+							break;
 						}
 					} else if (piece_of_color(board,kings_square,kings_square+diagonal_offsets[i]*j)==true) {
 						break;
